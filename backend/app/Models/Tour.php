@@ -33,4 +33,19 @@ class Tour extends Model
     public function getFormattedPriceAttribute() {
         return '$' . number_format($this->price, 2);
     }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    public function schedules()
+    {
+        return $this->hasMany(TourSchedule::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

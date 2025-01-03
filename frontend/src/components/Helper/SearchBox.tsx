@@ -11,6 +11,7 @@ const SearchBox = () => {
             <FaMap className="w-6 h-6 text-blue-600"/>
             <div>
                 <p className="text-lg font-medium mb-[0.2rem]">Địa điểm</p>
+                <p className="text-lg font-medium mb-[0.2rem]">Địa điểm</p>
                 <input 
                 type="text" 
                 placeholder="Bạn muốn đi đâu" 
@@ -22,6 +23,7 @@ const SearchBox = () => {
             <FaCalendarWeek className="w-6 h-6 text-blue-600"/>
             <div>
                 <p className="text-lg font-medium mb-[0.2rem]">Ngày bắt đầu</p>
+                <p className="text-lg font-medium mb-[0.2rem]">Ngày bắt đầu</p>
                 <input type="date" className="outline-none border-none" />
             </div>
         </div>
@@ -29,6 +31,7 @@ const SearchBox = () => {
         <div className="flex items-center space-x-6">
             <FaCalendarWeek className="w-6 h-6 text-blue-600"/>
             <div>
+                <p className="text-lg font-medium mb-[0.2rem]">Ngày kết thúc</p>
                 <p className="text-lg font-medium mb-[0.2rem]">Ngày kết thúc</p>
                 <input type="date" className="outline-none border-none" />
             </div>
