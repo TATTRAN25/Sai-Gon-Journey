@@ -124,7 +124,14 @@ class TourController extends Controller
             return response()->json(['message' => 'Không tìm thấy Tour'], 404);
         }
 
+        // Xóa ảnh cũ
+        if ($tour->image) {
+            Storage::disk('public')->delete($tour->image);
+        }
+
+        // Xóa tour
         $tour->delete();
+
         return response()->json(['message' => 'Xóa Tour thành công']);
     }
 }

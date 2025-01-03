@@ -102,13 +102,18 @@ class HotelController extends Controller
         return response()->json($hotel);
     }
 
-    // Xóa khách sạn (xóa hoàn toàn)
+    // Xóa khách sạn
     public function destroy($id)
     {
         // Tìm khách sạn theo ID
         $hotel = Hotel::find($id);
         if (!$hotel) {
             return response()->json(['message' => 'Khách sạn không tồn tại'], 404);
+        }
+
+        // Xóa ảnh cũ (nếu có)
+        if ($hotel->image) {
+            Storage::disk('public')->delete($hotel->image);
         }
 
         // Xóa khách sạn
