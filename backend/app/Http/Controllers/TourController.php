@@ -27,17 +27,21 @@ class TourController extends Controller
     // Thêm mới tour
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:100|regex:/^[a-zA-Z ]+$/',
-            'description' => 'required|string|max:255',
-            'price' => 'required|numeric|max:1000000000',
-            'start_date' => 'required|date|before_or_equal:today',
-            'end_date' => 'required|date|after:start_date|before:start_date+3month',
-            'image' => 'nullable|string|in:storage/app/public/tours',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:25|regex:/^[a-zA-Z \p{L}]+$/u',
+                'description' => 'required|string|max:255',
+                'price' => 'required|numeric|max:1000000000',
+                'start_date' => 'required|date|after_or_equal:today',
+                'end_date' => 'required|date',
+                'image' => 'nullable|string|in:storage/app/public/tours',
+            ]);
 
-        $tour = Tour::create($request->all());
-        return response()->json($tour, 201);
+            $tour = Tour::create($request->all());
+            return response()->json($tour, 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => 'Lỗi validate', 'errors' => $e->errors()], 422);
+        }
     }
 
     // Cập nhật thông tin tour
@@ -48,17 +52,23 @@ class TourController extends Controller
             return response()->json(['message' => 'Tour not found'], 404);
         }
 
-        $request->validate([
-            'name' => 'sometimes|string|max:100|regex:/^[a-zA-Z ]+$/',
-            'description' => 'sometimes|string|max:255',
-            'price' => 'sometimes|numeric|max:1000000000',
-            'start_date' => 'sometimes|date|before_or_equal:today',
-            'end_date' => 'sometimes|date|after:start_date|before:start_date+3month',
-            'image' => 'nullable|string|in:storage/app/public/tours',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'nullable|string|max:25|regex:/^[a-zA-Z \p{L}]+$/u',
+                'description' => 'nullable|string|max:255',
+                'price' => 'nullable|numeric|max:1000000000',
+                'start_date' => 'nullable|date|after_or_equal:today',
+                'end_date' => 'nullable|date',
+                'image' => 'nullable|string|in:storage/app/public/tours',
+            ]);
 
-        $tour->update($request->all());
-        return response()->json($tour);
+            $tour->update($request->all());
+            return response()->json($tour);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => 'Lỗi validate', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi khi cập nhật tour', 'error' => $e->getMessage()], 500);
+        }
     }
 
     // Xóa tour
