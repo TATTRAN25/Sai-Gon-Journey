@@ -10,7 +10,7 @@ const ResponsiveNav = () => {
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            setShowNav(false);
+            setShowNav(true);
         }
     }, []);
 
