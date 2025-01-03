@@ -158,7 +158,7 @@ class TourController extends Controller
 
         try {
             $request->validate([
-                'schedule_date' => 'required|date',
+                'schedule_date' => 'required|date|after_or_equal:today',
                 'description' => 'required|string|max:255',
             ]);
 
@@ -186,7 +186,7 @@ class TourController extends Controller
 
         try {
             $request->validate([
-                'schedule_date' => 'nullable|date',
+                'schedule_date' => 'nullable|date|after_or_equal:today',
                 'description' => 'nullable|string|max:255',
             ]);
 
