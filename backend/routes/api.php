@@ -7,12 +7,21 @@ use App\Http\Controllers\HotelController;
 
 // Nhóm các route với prefix "v1"
 Route::prefix('v1')->group(function () {
-    // Route lấy thông tin người dùng đã xác thực
-    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-        return $request->user();
-    });
-
-    // Đăng ký các routes cho TourController
-    Route::apiResource('tours', TourController::class);
+    // Routes cho HotelController
     Route::apiResource('hotels', HotelController::class);
+
+    // Routes cho hotel_rooms
+    Route::get('/hotels/{hotelId}/rooms', [HotelController::class, 'getRooms']);
+    Route::post('/hotels/{hotelId}/rooms', [HotelController::class, 'addRoom']);
+    Route::put('/hotels/{hotelId}/rooms/{roomId}', [HotelController::class, 'updateRoom']);
+    Route::delete('/hotels/{hotelId}/rooms/{roomId}', [HotelController::class, 'deleteRoom']);
+
+    // Routes cho TourController
+    Route::apiResource('tours', TourController::class);
+
+    // Routes cho tour_schedules
+    Route::get('/tours/{tourId}/schedules', [TourController::class, 'getSchedules']);
+    Route::post('/tours/{tourId}/schedules', [TourController::class, 'addSchedule']);
+    Route::put('/tours/{tourId}/schedules/{scheduleId}', [TourController::class, 'updateSchedule']);
+    Route::delete('/tours/{tourId}/schedules/{scheduleId}', [TourController::class, 'deleteSchedule']);
 });

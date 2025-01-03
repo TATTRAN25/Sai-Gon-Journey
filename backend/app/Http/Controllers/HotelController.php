@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Hotel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\HotelRoom;
 
 class HotelController extends Controller
 {
@@ -121,5 +122,91 @@ class HotelController extends Controller
 
         // Trả về thông báo thành công
         return response()->json(['message' => 'Khách sạn đã được xóa thành công']);
+    }
+
+    // Lấy danh sách các phòng của một khách sạn
+    public function getRooms($hotelId)
+    {
+        $hotel = Hotel::find($hotelId);
+        if (!$hotel) {
+            return response()->json(['message' => 'Khách sạn không tồn tại'], 404);
+        }
+
+        $rooms = $hotel->rooms;
+        return response()->json($rooms);
+    }
+
+    // Thêm mới phòng cho khách sạn
+    public function addRoom(Request $request, $hotelId)
+    {
+        $hotel = Hotel::find($hotelId);
+        if (!$hotel) {
+            return response()->json(['message' => 'Khách sạn không tồn tại'], 404);
+        }
+
+        try {
+            $request->validate([
+                'room_type' => 'required|string|max:50',
+                'price' => 'required|numeric|min:0|max:1000000000',
+                'capacity' => 'required|integer|min:1|max:10',
+            ]);
+
+            $room = $hotel->rooms()->create($request->all());
+            return response()->json($room, 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => 'Lỗi validate', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi khi thêm mới phòng', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // Cập nhật thông tin phòng
+    public function updateRoom(Request $request, $hotelId, $roomId)
+    {
+        $hotel = Hotel::find($hotelId);
+        if (!$hotel) {
+            return response()->json(['message' => 'Khách sạn không tồn tại'], 404);
+        }
+
+        $room = HotelRoom::where('hotel_id', $hotelId)->find($roomId);
+        if (!$room) {
+            return response()->json(['message' => 'Phòng không tồn tại'], 404);
+        }
+
+        try {
+            $request->validate([
+                'room_type' => 'nullable|string|max:50',
+                'price' => 'nullable|numeric|min:0|max:1000000000',
+                'capacity' => 'nullable|integer|min:1|max:50',
+            ]);
+            
+            $room->update($request->all());
+            return response()->json($room);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => 'Lỗi validate', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi khi cập nhật phòng', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // Xóa phòng
+    public function deleteRoom($hotelId, $roomId)
+    {
+        try {
+            $hotel = Hotel::find($hotelId);
+            if (!$hotel) {
+                return response()->json(['message' => 'Khách sạn không tồn tại'], 404);
+            }
+
+            $room = HotelRoom::where('hotel_id', $hotelId)->find($roomId);
+            if (!$room) {
+                return response()->json(['message' => 'Phòng không tồn tại'], 404);
+            }
+
+            $room->delete();
+            return response()->json(['message' => 'Phòng đã được xóa thành công']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi khi xóa phòng', 'error' => $e->getMessage()], 500);
+        }
     }
 }

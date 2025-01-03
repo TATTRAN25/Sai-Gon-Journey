@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Tour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\TourSchedule;
 
 class TourController extends Controller
 {
@@ -133,5 +134,85 @@ class TourController extends Controller
         $tour->delete();
 
         return response()->json(['message' => 'Xóa Tour thành công']);
+    }
+
+    // Lấy danh sách lịch trình của một tour
+    public function getSchedules($tourId)
+    {
+        $tour = Tour::find($tourId);
+        if (!$tour) {
+            return response()->json(['message' => 'Tour không tồn tại'], 404);
+        }
+
+        $schedules = $tour->schedules;
+        return response()->json($schedules);
+    }
+
+    // Thêm mới lịch trình cho tour
+    public function addSchedule(Request $request, $tourId)
+    {
+        $tour = Tour::find($tourId);
+        if (!$tour) {
+            return response()->json(['message' => 'Tour không tồn tại'], 404);
+        }
+
+        try {
+            $request->validate([
+                'schedule_date' => 'required|date',
+                'description' => 'required|string|max:255',
+            ]);
+
+            $schedule = $tour->schedules()->create($request->all());
+            return response()->json($schedule, 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => 'Lỗi validate', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi khi thêm mới lịch trình', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // Cập nhật thông tin lịch trình
+    public function updateSchedule(Request $request, $tourId, $scheduleId)
+    {
+        $tour = Tour::find($tourId);
+        if (!$tour) {
+            return response()->json(['message' => 'Tour không tồn tại'], 404);
+        }
+
+        $schedule = TourSchedule::where('tour_id', $tourId)->find($scheduleId);
+        if (!$schedule) {
+            return response()->json(['message' => 'Lịch trình không tồn tại'], 404);
+        }
+
+        try {
+            $request->validate([
+                'schedule_date' => 'nullable|date',
+                'description' => 'nullable|string|max:255',
+            ]);
+
+            $schedule->update($request->all());
+            return response()->json($schedule);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['message' => 'Lỗi validate', 'errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Lỗi khi cập nhật lịch trình', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // Xóa lịch trình
+    public function deleteSchedule($tourId, $scheduleId)
+    {
+        $tour = Tour::find($tourId);
+        if (!$tour) {
+            return response()->json(['message' => 'Tour không tồn tại'], 404);
+        }
+
+        $schedule = TourSchedule::where('tour_id', $tourId)->find($scheduleId);
+        if (!$schedule) {
+            return response()->json(['message' => 'Lịch trình không tồn tại'], 404);
+        }
+
+        $schedule->delete();
+        return response()->json(['message' => 'Lịch trình đã được xóa thành công']);
     }
 }
