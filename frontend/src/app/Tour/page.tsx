@@ -1,62 +1,31 @@
-'use client';
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import Link from 'next/link';
+// app/Tour/page.tsx
+"use client";
+import React from 'react';
+import TourList from '../../components/Tour/TourList';
 
-// Định nghĩa kiểu dữ liệu cho Tour
-interface Tour {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  start_date: string;
-  end_date: string;
-  image?: string;
-}
+import { useEffect, useState } from 'react';
 
-const ToursPage: React.FC = () => {
-  const [tours, setTours] = useState<Tour[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+const TourPage = () => {
+  const [tours, setTours] = useState([]);
 
   useEffect(() => {
+    const fetchTours = async () => {
+      const response = await fetch('http://localhost:8000/api/v1/tours');
+      const tours = await response.json();
+      setTours(tours);
+    };
+
     fetchTours();
   }, []);
 
-  const fetchTours = async () => {
-    try {
-      const response = await axios.get<Tour[]>('https://laravel-tour-api.herokuapp.com/api/tours');
-      setTours(response.data);
-    } catch (error) {
-      console.error('Error fetching tours:', error);
-    }
-  };
-
-  const filteredTours = tours.filter(tour =>
-    tour.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
-    <div>
-      <h1>Danh sách Tour</h1>
-      <input
-        type="text"
-        placeholder="Tìm kiếm tour..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <ul>
-        {filteredTours.map(tour => (
-          <li key={tour.id}>
-            <Link href={`/tours/${tour.id}`}>
-              <a>{tour.name}</a>
-            </Link>
-            <p>{tour.description}</p>
-            <p>Giá: {tour.price} VND</p>
-          </li>
-        ))}
-      </ul>
+    <div className="container mx-auto p-4">
+      <div className="flex items-center justify-center h-[calc(50vh-100px)]">
+        <h1 className="text-3xl font-bold">Danh Sách Tour</h1>
+      </div>
+      <TourList tours={tours} />
     </div>
   );
 };
 
-export default ToursPage;
+export default TourPage;
