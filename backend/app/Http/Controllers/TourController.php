@@ -54,7 +54,7 @@ class TourController extends Controller
                 'price' => $request->price,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
-                'image' => $imagePath, // Lưu đường dẫn file ảnh
+                'image' => $imagePath,
             ]);
 
             // Trả về thông tin tour vừa tạo
@@ -87,6 +87,7 @@ class TourController extends Controller
             ]);
 
             // Xử lý file ảnh (nếu có)
+            $imagePath = $tour->image;
             if ($request->hasFile('image')) {
                 // Xóa ảnh cũ (nếu có)
                 if ($tour->image) {
@@ -95,7 +96,6 @@ class TourController extends Controller
 
                 // Lưu ảnh mới vào thư mục `storage/app/public/tours`
                 $imagePath = $request->file('image')->store('tours', 'public');
-                $tour->image = $imagePath;
             }
 
             // Cập nhật thông tin tour

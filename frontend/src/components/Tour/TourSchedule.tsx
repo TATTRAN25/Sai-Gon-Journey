@@ -8,7 +8,7 @@ interface TourScheduleProps {
     schedule_date: string;
     description: string;
   }>;
-  onScheduleAdded?: () => void; // Callback để refresh danh sách
+  onScheduleAdded?: () => void;
 }
 
 const TourSchedule: React.FC<TourScheduleProps> = ({ tourId, schedules, onScheduleAdded }) => {
@@ -23,18 +23,22 @@ const TourSchedule: React.FC<TourScheduleProps> = ({ tourId, schedules, onSchedu
 
     try {
       await axios.post(`/api/tours/${tourId}/schedules`, newSchedule);
-      setNewSchedule({ schedule_date: '', description: '' }); // Reset form
+      setNewSchedule({ schedule_date: '', description: '' });
       setError(null);
-      if (onScheduleAdded) onScheduleAdded(); // Refresh danh sách
+      if (onScheduleAdded) onScheduleAdded();
     } catch (error) {
       console.error('Error adding schedule:', error);
-      setError('Có lỗi xảy ra khi thêm lịch trình.');
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.message || 'Có lỗi xảy ra khi thêm lịch trình.');
+      } else {
+        setError('Có lỗi xảy ra khi thêm lịch trình.');
+      }
     }
   };
 
   return (
     <div className="space-y-4">
-      <h3 className="text-xl font-bold">Schedules</h3>
+      <h3 className="text-xl font-bold">Lịch Trình</h3>
       {schedules.map((schedule) => (
         <div key={schedule.id} className="border p-4 rounded-lg">
           <p><strong>Ngày:</strong> {schedule.schedule_date}</p>

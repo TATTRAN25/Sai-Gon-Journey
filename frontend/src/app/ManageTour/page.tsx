@@ -10,7 +10,7 @@ interface Tour {
   price: number;
   start_date: string;
   end_date: string;
-  image?: string;
+  image?: File | string;
 }
 
 const ManageTourPage = () => {
@@ -28,18 +28,25 @@ const ManageTourPage = () => {
   }, []);
 
   const handleAddTour = async (newTour: Tour) => {
-    // Gửi yêu cầu thêm tour đến API
-    const response = await fetch('http://localhost:8000/api/v1/tours', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newTour),
-    });
-    const data = await response.json();
-    console.log('Tour added:', data);
-    setTours([...tours, data]); // Cập nhật danh sách tour sau khi thêm thành công
-  };
+      // Gửi yêu cầu thêm tour đến API
+      const formData = new FormData();
+      formData.append('name', newTour.name);
+      formData.append('description', newTour.description);
+      formData.append('price', newTour.price.toString());
+      formData.append('start_date', newTour.start_date);
+      formData.append('end_date', newTour.end_date);
+      if (newTour.image) {
+        formData.append('image', newTour.image);
+      }
+  
+      const response = await fetch('http://localhost:8000/api/v1/tours', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      console.log('Tour added:', data);
+      setTours([...tours, data]);
+    };
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
@@ -48,12 +55,19 @@ const ManageTourPage = () => {
         <div className="bg-white p-6 rounded-lg shadow-md">
           {/* Thêm mới tour */}
           <TourForm
-            onSubmit={(tour) =>
-              handleAddTour({
-                ...tour,
-                id: tours.length + 1, // Tạm thởi tạo ID mới (nên để backend tự tạo ID)
-              })
-            }
+            onSubmit={(tour) => {
+              const newTour: Tour = {
+              ...tour,
+              id: tours.length + 1,
+              name: tour.name,
+              description: tour.description,
+              price: tour.price,
+              start_date: tour.start_date,
+              end_date: tour.end_date,
+              image: tour.image ?? undefined,
+              };
+              handleAddTour(newTour);
+            }}
           />
           {/* Danh sách tour */}
           <TourList tours={tours} />

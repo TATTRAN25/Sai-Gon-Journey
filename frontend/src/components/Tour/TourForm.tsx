@@ -1,26 +1,28 @@
-// components/Tour/TourForm.tsx
 import React, { useState } from "react";
 
+interface Tour {
+  name: string;
+  description: string;
+  price: number;
+  start_date: string;
+  end_date: string;
+  image: File | null;
+}
+
 interface TourFormProps {
-  onSubmit: (tour: {
-    name: string;
-    description: string;
-    price: number;
-    start_date: string;
-    end_date: string;
-    image?: string;
-  }) => void;
+  onSubmit: (tour: Tour) => void;
 }
 
 const TourForm: React.FC<TourFormProps> = ({ onSubmit }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Tour>({
     name: "",
     description: "",
     price: 0,
     start_date: "",
     end_date: "",
-    image: null as File | null,
+    image: null,
   });
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -37,16 +39,23 @@ const TourForm: React.FC<TourFormProps> = ({ onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({
-      ...formData,
-      image: formData.image ? URL.createObjectURL(formData.image) : undefined,
-    });
+    if (new Date(formData.start_date) > new Date(formData.end_date)) {
+      setError('Ngày bắt đầu không được lớn hơn ngày kết thúc.');
+      return;
+    }
+    if (formData.price <= 0) {
+      setError('Giá phải lớn hơn 0.');
+      return;
+    }
+    setError(null);
+    onSubmit(formData);
   };
 
   return (
     <div className="bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold mb-6 text-center">Thêm Tour Mới</h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <input
@@ -61,7 +70,7 @@ const TourForm: React.FC<TourFormProps> = ({ onSubmit }) => {
             <input
               type="number"
               name="price"
-              value={formData.price}
+              value={formData.price.toString()}
               onChange={handleChange}
               placeholder="Giá"
               required

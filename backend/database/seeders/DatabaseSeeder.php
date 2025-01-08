@@ -40,7 +40,6 @@ class DatabaseSeeder extends Seeder
             'price' => 1500000,
             'start_date' => '2023-12-01',
             'end_date' => '2023-12-03',
-            'image' => 'tour_da_nang.jpg',
         ]);
 
         // Tạo dữ liệu mẫu cho bảng hotels
@@ -48,7 +47,6 @@ class DatabaseSeeder extends Seeder
             'name' => 'Khách sạn Biển Đông',
             'address' => '123 Đường Biển, Đà Nẵng',
             'price_per_night' => 500000,
-            'image' => 'hotel_bien_dong.jpg',
         ]);
 
         // Tạo dữ liệu mẫu cho bảng hotel_rooms
