@@ -28,25 +28,30 @@ const ManageTourPage = () => {
   }, []);
 
   const handleAddTour = async (newTour: Tour) => {
-      // Gửi yêu cầu thêm tour đến API
-      const formData = new FormData();
-      formData.append('name', newTour.name);
-      formData.append('description', newTour.description);
-      formData.append('price', newTour.price.toString());
-      formData.append('start_date', newTour.start_date);
-      formData.append('end_date', newTour.end_date);
-      if (newTour.image) {
-        formData.append('image', newTour.image);
-      }
+    const formData = new FormData();
+    formData.append('name', newTour.name);
+    formData.append('description', newTour.description);
+    formData.append('price', newTour.price.toString());
+    formData.append('start_date', newTour.start_date);
+    formData.append('end_date', newTour.end_date);
+    if (newTour.image) {
+      formData.append('image', newTour.image);
+    }
   
+    try {
       const response = await fetch('http://localhost:8000/api/v1/tours', {
         method: 'POST',
         body: formData,
       });
+      if (!response.ok) {
+        throw new Error('Error adding tour');
+      }
       const data = await response.json();
-      console.log('Tour added:', data);
       setTours([...tours, data]);
-    };
+    } catch (error) {
+      console.error('Error adding tour:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
