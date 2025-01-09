@@ -47,6 +47,7 @@ const TourSelected: React.FC<TourSelectedProps> = ({ tours, onEdit, onDelete }) 
                             width={256}
                             height={256}
                             unoptimized
+                            className="w-64 h-64 object-cover"
                         />
                         <h2 className="text-xl font-bold mt-4">{tour.name}</h2>
                         <p className="text-gray-600">{tour.description}</p>

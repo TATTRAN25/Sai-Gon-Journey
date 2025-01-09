@@ -100,11 +100,11 @@ class TourController extends Controller
 
             // Cập nhật thông tin tour
             $tour->update(array_filter([
-                'name' => $request->name,
-                'description' => $request->description,
-                'price' => $request->price,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
+                'name' => $request->input('name', $tour->name),
+                'description' => $request->input('description', $tour->description),
+                'price' => $request->input('price', $tour->price),
+                'start_date' => $request->input('start_date', $tour->start_date),
+                'end_date' => $request->input('end_date', $tour->end_date),
                 'image' => $imagePath,
             ]));
 

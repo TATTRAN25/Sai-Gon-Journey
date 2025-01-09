@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
-import TourForm from '../../components/Tour/TourForm';
-import TourFormEdit from '../../components/Tour/TourFormEdit';
+import TourForm from '../../../components/Tour/TourForm';
+import TourFormEdit from '../../../components/Tour/TourFormEdit';
 import TourSelected from '@/components/Tour/TourSelected';
 import Modal from '@/components/Tour/Modal';
 
