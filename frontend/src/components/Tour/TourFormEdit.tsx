@@ -1,38 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 interface Tour {
-  name: string;
-  description: string;
-  price: number;
-  start_date: string;
-  end_date: string;
-  image: File | null;
-}
-
-interface TourFormProps {
-  onSubmit: (tour: Tour) => void;
-  initialData?: {
   id: number;
   name: string;
   description: string;
   price: number;
   start_date: string;
   end_date: string;
-  image: File | null;
-  }; 
-
+  image: File | string | null;
 }
 
-const TourForm: React.FC<TourFormProps> = ({ onSubmit }) => {
-  const [formData, setFormData] = useState<Tour>({
-    name: "",
-    description: "",
-    price: 0,
-    start_date: "",
-    end_date: "",
-    image: null,
-  });
+interface TourFormEditProps {
+  onSubmit: (tour: Tour) => void;
+  initialData: Tour;
+}
+
+const TourFormEdit: React.FC<TourFormEditProps> = ({ onSubmit, initialData }) => {
+  const [formData, setFormData] = useState<Tour>(initialData);
   const [error, setError] = useState<string | null>(null);
+  const [updateImage, setUpdateImage] = useState<boolean>(false);
+
+  useEffect(() => {
+    setFormData(initialData);
+  }, [initialData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -69,7 +59,7 @@ const TourForm: React.FC<TourFormProps> = ({ onSubmit }) => {
   return (
     <div className="bg-gray-100 p-8">
       <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold mb-6 text-center">Thêm Tour Mới</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Chỉnh Sửa Tour</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -85,7 +75,7 @@ const TourForm: React.FC<TourFormProps> = ({ onSubmit }) => {
             <input
               type="text"
               name="price"
-              value={formData.price}
+              value={formData.price.toString()}
               onChange={handleChange}
               placeholder="Giá"
               required
@@ -116,17 +106,28 @@ const TourForm: React.FC<TourFormProps> = ({ onSubmit }) => {
             required
             className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <input
-            type="file"
-            name="image"
-            onChange={handleFileChange}
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              checked={updateImage}
+              onChange={() => setUpdateImage(!updateImage)}
+              className="mr-2"
+            />
+            <label>Chỉnh sửa hình ảnh</label>
+          </div>
+          {updateImage && (
+            <input
+              type="file"
+              name="image"
+              onChange={handleFileChange}
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          )}
           <button
             type="submit"
             className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            Thêm Tour
+            Cập Nhật Tour
           </button>
         </form>
       </div>
@@ -134,4 +135,4 @@ const TourForm: React.FC<TourFormProps> = ({ onSubmit }) => {
   );
 };
 
-export default TourForm;
+export default TourFormEdit;

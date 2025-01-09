@@ -99,14 +99,14 @@ class TourController extends Controller
             }
 
             // Cập nhật thông tin tour
-            $tour->update([
-                'name' => $request->name ?? $tour->name,
-                'description' => $request->description ?? $tour->description,
-                'price' => $request->price ?? $tour->price,
-                'start_date' => $request->start_date ?? $tour->start_date,
-                'end_date' => $request->end_date ?? $tour->end_date,
-                'image' => $imagePath ?? $tour->image,
-            ]);
+            $tour->update(array_filter([
+                'name' => $request->name,
+                'description' => $request->description,
+                'price' => $request->price,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'image' => $imagePath,
+            ]));
 
             // Trả về thông tin tour đã cập nhật
             return response()->json($tour);

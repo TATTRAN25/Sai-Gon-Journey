@@ -93,10 +93,10 @@ class HotelController extends Controller
 
         // Cập nhật thông tin khách sạn
         $hotel->update([
-            'name' => $request->name ?? $hotel->name,
-            'address' => $request->address ?? $hotel->address,
-            'price_per_night' => $request->price_per_night ?? $hotel->price_per_night,
-            'image' => $imagePath ?? $hotel->image,
+            'name' => $request->input('name', $hotel->name),
+            'address' => $request->input('address', $hotel->address),
+            'price_per_night' => $request->input('price_per_night', $hotel->price_per_night),
+            'image' => $imagePath,
         ]);
 
         // Trả về thông tin khách sạn đã cập nhật
