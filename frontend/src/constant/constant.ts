@@ -11,7 +11,8 @@ export const navLinks = [
     },
     {
         id: 3,
-        url: '/Tour',
+        url: '/client/Tour',
+        // url: '/admin/Tour',
         label: 'Destination'
     },
     {

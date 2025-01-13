@@ -45,9 +45,10 @@ const TourList: React.FC<TourListProps> = ({ tours, onTourClick }) => {
         className="w-64 h-64 object-cover"
       />
       <h2 className="text-xl font-bold mt-4">{tour.name}</h2>
-      <p className="text-gray-600">{tour.description}</p>
-      <p className="text-gray-800 font-semibold">${tour.price}</p>
-      <a href={`/client/Tour/Detail/${tour.id}`} className="text-blue-500 mt-4">Xem chi tiết</a>
+      <p className="text-gray-600">Ngày bắt đầu: {new Date(tour.start_date).toLocaleDateString('vi-VN')}</p>
+      <p className="text-gray-600">Ngày kết thúc: {new Date(tour.end_date).toLocaleDateString('vi-VN')}</p>
+      <p className="text-gray-800 font-semibold">Giá vé:{tour.price}$</p>
+      <a href={`/client/Tour/${tour.id}`} className="text-blue-500 mt-4">Xem chi tiết</a>
       </div>
       ))}
       </div>

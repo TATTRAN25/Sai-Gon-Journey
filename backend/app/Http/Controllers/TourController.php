@@ -35,7 +35,7 @@ class TourController extends Controller
                 'name' => 'required|string|max:25|regex:/^[a-zA-Z \p{L}]+$/u',
                 'description' => 'required|string|max:255',
                 'price' => 'required|numeric|max:1000000000',
-                'start_date' => 'required|date|after_or_equal:today',
+                'start_date' => 'required|date|after_or_equal:' . now()->subWeek()->toDateString(),
                 'end_date' => 'required|date|after:start_date',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
@@ -81,7 +81,7 @@ class TourController extends Controller
                 'name' => 'nullable|string|max:25|regex:/^[a-zA-Z \p{L}]+$/u',
                 'description' => 'nullable|string|max:255',
                 'price' => 'nullable|numeric|max:1000000000',
-                'start_date' => 'nullable|date|after_or_equal:today',
+                'start_date' => 'nullable|date|after_or_equal:' . now()->subWeek()->toDateString(),
                 'end_date' => 'nullable|date|after:start_date',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);

@@ -2,8 +2,7 @@
 "use client";
 import React from "react";
 import TourList from "@/components/Tour/TourList";
-import { useRouter } from "next/router";
-
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const TourPage = () => {
@@ -12,10 +11,10 @@ const TourPage = () => {
   const [isRouterReady, setIsRouterReady] = useState(false);
 
   useEffect(() => {
-    if (router.isReady) {
+    if (router) {
       setIsRouterReady(true);
     }
-  }, [router.isReady]);
+  }, [router]);
 
   useEffect(() => {
     const fetchTours = async () => {
@@ -29,13 +28,13 @@ const TourPage = () => {
     }
   }, [isRouterReady]);
 
+  // Điều hướng đến trang chi tiết Tour
   const handleTourClick = (tourId: number) => {
-    router.push(`/tour/${tourId}`);
+    router.push(`/client/Tour/${tourId}`);
   };
 
   return (
     <div className="container mx-auto p-4">
-      <div className="container mx-auto p-4 mt-4"></div>
       <TourList tours={tours} onTourClick={handleTourClick} />
     </div>
   );
