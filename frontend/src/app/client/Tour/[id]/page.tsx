@@ -3,16 +3,16 @@
 import React from 'react';
 import TourDetail from '@/components/Tour/TourDetail';
 
-const TourDetailPage = ({ params }: { params: { id: string } }) => {
-    const tourId = params.id;
+const TourDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
+    const { id } = React.use(params) as { id: string };
 
-    if (!tourId) {
+    if (!id) {
         return <div>Loading...</div>;
     }
 
     return (
         <div>
-            <TourDetail params={{ id: tourId }} />
+            <TourDetail params={params} />
         </div>
     );
 };

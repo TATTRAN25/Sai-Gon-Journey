@@ -43,6 +43,7 @@ const TourList: React.FC<TourListProps> = ({ tours, onTourClick }) => {
         height={256}
         unoptimized
         className="w-64 h-64 object-cover"
+        priority
       />
       <h2 className="text-xl font-bold mt-4">{tour.name}</h2>
       <p className="text-gray-600">Ngày bắt đầu: {new Date(tour.start_date).toLocaleDateString('vi-VN')}</p>

@@ -12,13 +12,11 @@ interface Tour {
 }
 
 interface TourDetailProps {
-  params: {
-    id: string | string[];
-  }
+  params: Promise<{ id: string | string[] }>;
 }
 
-const TourDetail: React.FC<TourDetailProps> = ({ params }) => {
-  const { id } = params as { id: string | string[] };
+const TourDetail: React.FC<TourDetailProps> = ({ params: paramsPromise }) => {
+  const { id } = React.use(paramsPromise) as { id: string | string[] };
   const [tour, setTour] = useState<Tour | null>(null);
   const [latestTours, setLatestTours] = useState<Tour[]>([]);
 
@@ -67,10 +65,12 @@ const TourDetail: React.FC<TourDetailProps> = ({ params }) => {
           <Image
             src={getImageSrc(tour.image)}
             alt={tour.name}
-            className="h-auto object-cover mb-6 mx-auto"
+            className="h-80 w-80 object-cover mb-6 mx-auto"
             loader={({ src }) => src}
-            width={400}
-            height={400}
+            width={320}
+            height={320}
+            unoptimized
+            priority
           />
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="text-center">
@@ -117,10 +117,11 @@ const TourDetail: React.FC<TourDetailProps> = ({ params }) => {
                   <Image
                     src={getImageSrc(latestTour.image)}
                     alt={latestTour.name}
-                    layout="fill"
-                    objectFit="cover"
                     className="rounded-t-lg"
                     unoptimized
+                    loader={({ src }) => src}
+                    priority
+                    fill
                   />
                 </div>
                 <div className="p-4">
@@ -137,3 +138,4 @@ const TourDetail: React.FC<TourDetailProps> = ({ params }) => {
 };
 
 export default TourDetail;
+
