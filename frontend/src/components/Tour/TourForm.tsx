@@ -12,27 +12,27 @@ interface Tour {
 interface TourFormProps {
   onSubmit: (tour: Tour) => void;
   initialData?: {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  start_date: string;
-  end_date: string;
-  image: File | null;
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    start_date: string;
+    end_date: string;
+    image: File | null;
   }; 
-
 }
 
-const TourForm: React.FC<TourFormProps> = ({ onSubmit }) => {
+const TourForm: React.FC<TourFormProps> = ({ onSubmit, initialData }) => {
   const [formData, setFormData] = useState<Tour>({
-    name: "",
-    description: "",
-    price: 0,
-    start_date: "",
-    end_date: "",
-    image: null,
+    name: initialData?.name || "",
+    description: initialData?.description || "",
+    price: initialData?.price || 0,
+    start_date: initialData?.start_date || "",
+    end_date: initialData?.end_date || "",
+    image: initialData?.image || null,
   });
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -54,16 +54,54 @@ const TourForm: React.FC<TourFormProps> = ({ onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const nameRegex = /^[a-zA-Z \p{L}\p{M}]+$/u;
+    if (!nameRegex.test(formData.name.trim())) {
+      setError('Tên Tour không hợp lệ. Vui lòng nhập tên Tour có kí tự alphabet, dấu và khoảng trắng.');
+      return;
+    }
+    if (formData.name.trim().length > 25) {
+      setError('Tên Tour không được dài hơn 25 kí tự.');
+      return;
+    }
+    if (formData.description.trim().length > 255) {
+      setError('Mô tả không được dài hơn 255 kí tự.');
+      return;
+    }
+    if (formData.price <= 0 || formData.price > 1000000000) {
+      setError('Giá phải nằm trong khoảng 1-1.000.000.000 VND.');
+      return;
+    }
+    if (new Date(formData.start_date).valueOf() < new Date().setDate(new Date().getDate() - 7).valueOf()) {
+      setError('Ngày bắt đầu phải sau ngày hôm nay 1 tuần.');
+      return;
+    }
     if (new Date(formData.start_date) > new Date(formData.end_date)) {
       setError('Ngày bắt đầu không được lớn hơn ngày kết thúc.');
       return;
     }
-    if (formData.price <= 0) {
-      setError('Giá phải lớn hơn 0.');
+    if (formData.image && formData.image.size > 2048 * 1024) {
+      setError('Hình ảnh không được để lớn hơn 2MB.');
+      return;
+    }
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+    if (formData.image && !allowedMimeTypes.includes(formData.image.type)) {
+      setError('Hình ảnh không hợp lệ. Vui lòng nhập hình ảnh có định dạng .jpeg, .png, .jpg, .gif.');
       return;
     }
     setError(null);
+    setSuccess('Thêm Tour thành công');
     onSubmit(formData);
+    setTimeout(() => {
+      setSuccess(null);
+      setFormData({
+        name: "",
+        description: "",
+        price: 0,
+        start_date: "",
+        end_date: "",
+        image: null,
+      });
+    }, 2000);
   };
 
   return (
@@ -71,6 +109,7 @@ const TourForm: React.FC<TourFormProps> = ({ onSubmit }) => {
       <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold mb-6 text-center">Thêm Tour Mới</h2>
         {error && <p className="text-red-500 mb-4">{error}</p>}
+        {success && <p className="text-green-500 mb-4">{success}</p>}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <input
@@ -135,3 +174,4 @@ const TourForm: React.FC<TourFormProps> = ({ onSubmit }) => {
 };
 
 export default TourForm;
+

@@ -28,16 +28,54 @@ const TourFormEdit: React.FC<TourFormEditProps> = ({ onSubmit, initialData }) =>
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    if (name === "price") {
-      const numericValue = value.replace(/\./g, "");
-      setFormData({ ...formData, [name]: Number(numericValue) });
-    } else {
+
+    if (name === "name") {
+      if (value.trim().match(/[!@#$%^&*(),.?":{}|<>\-_=+]/)) {
+        setError('Tên Tour không hợp lệ. Vui lòng nhập tên Tour không có kí tự đặc biệt.');
+      } else {
+        setError(null);
+      }
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "description") {
+      if (value.trim().length > 255) {
+        setError('Mô tả không được dài hơn 255 kí tự.');
+      } else {
+        setError(null);
+      }
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "price") {
+      if (isNaN(Number(value.replace(/\./g, ""))) || Number(value.replace(/\./g, "")) > 1000000000) {
+        setError('Giá phải nằm trong khoảng 1-1.000.000.000 VND.');
+      } else {
+        setError(null);
+      }
+      setFormData({ ...formData, [name]: Number(value.replace(/\./g, "")) });
+    } else if (name === "start_date") {
+      const startDate = new Date(value);
+      if (startDate.valueOf() < new Date().setDate(new Date().getDate() - 7).valueOf()) {
+        setError('Ngày bắt đầu phải sau ngày hôm nay 1 tuần.');
+      } else {
+        setError(null);
+      }
+      setFormData({ ...formData, [name]: value });
+    } else if (name === "end_date") {
+      const endDate = new Date(value);
+      if (endDate.valueOf() < new Date(formData.start_date).valueOf()) {
+        setError('Ngày kết thúc phải sau ngày bắt đầu  .');
+      } else {
+        setError(null);
+      }
       setFormData({ ...formData, [name]: value });
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
+      if (e.target.files[0].size > 2048 * 1024) {
+        setError('Hình ảnh không được lớn hơn 2MB.');
+      } else {
+        setError(null);
+      }
       setFormData({ ...formData, image: e.target.files[0] });
     }
   };
@@ -46,14 +84,14 @@ const TourFormEdit: React.FC<TourFormEditProps> = ({ onSubmit, initialData }) =>
     e.preventDefault();
     if (new Date(formData.start_date) > new Date(formData.end_date)) {
       setError('Ngày bắt đầu không được lớn hơn ngày kết thúc.');
-      return;
-    }
-    if (formData.price <= 0) {
+    } else if (formData.price <= 0) {
       setError('Giá phải lớn hơn 0.');
-      return;
+    } else {
+      setError(null);
+      onSubmit(formData);
+      setTimeout(() => {
+      }, 2000);
     }
-    setError(null);
-    onSubmit(formData);
   };
 
   return (
@@ -136,3 +174,4 @@ const TourFormEdit: React.FC<TourFormEditProps> = ({ onSubmit, initialData }) =>
 };
 
 export default TourFormEdit;
+
