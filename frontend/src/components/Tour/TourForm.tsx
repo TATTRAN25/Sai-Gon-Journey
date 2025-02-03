@@ -38,12 +38,39 @@ const TourForm: React.FC<TourFormProps> = ({ onSubmit, initialData }) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    if (name === "price") {
-      const numericValue = value.replace(/\./g, "");
-      setFormData({ ...formData, [name]: Number(numericValue) });
+    if (name === "name" && value.trim().match(/[0-9!@#$%^&*(),.?":{}|<>\-_=+]/)) {
+      setError('Tên Tour không hợp lệ. Vui lòng nhập tên Tour không có kí tự đặc biệt và số.');
+    } else if (name === "description" && value.trim().length > 255) {
+      setError('Mô tả không được dài hơn 255 kí tự.');
+    } else if (name === "price") {
+      if (value.trim().match(/[a-zA-Z]/)) {
+        setError('Giá không được chứa chữ.');
+      } else {
+        const numericValue = value.replace(/\./g, "");
+        if (isNaN(Number(numericValue)) || Number(numericValue) > 1000000000) {
+          setError('Giá phải nằm trong khoảng 1-1.000.000.000 VND.');
+        } else {
+          setError(null);
+        }
+      }
+    } else if (name === "start_date") {
+      const startDate = new Date(value);
+      if (startDate.valueOf() < new Date().setDate(new Date().getDate() - 7).valueOf()) {
+        setError('Ngày bắt đầu phải sau ngày hôm nay 1 tuần.');
+      } else {
+        setError(null);
+      }
+    } else if (name === "end_date") {
+      const endDate = new Date(value);
+      if (endDate.valueOf() < new Date(formData.start_date).valueOf()) {
+        setError('Ngày kết thúc phải sau ngày bắt đầu.');
+      } else {
+        setError(null);
+      }
     } else {
-      setFormData({ ...formData, [name]: value });
+      setError(null);
     }
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,31 +81,6 @@ const TourForm: React.FC<TourFormProps> = ({ onSubmit, initialData }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const nameRegex = /^[a-zA-Z \p{L}\p{M}]+$/u;
-    if (!nameRegex.test(formData.name.trim())) {
-      setError('Tên Tour không hợp lệ. Vui lòng nhập tên Tour có kí tự alphabet, dấu và khoảng trắng.');
-      return;
-    }
-    if (formData.name.trim().length > 25) {
-      setError('Tên Tour không được dài hơn 25 kí tự.');
-      return;
-    }
-    if (formData.description.trim().length > 255) {
-      setError('Mô tả không được dài hơn 255 kí tự.');
-      return;
-    }
-    if (formData.price <= 0 || formData.price > 1000000000) {
-      setError('Giá phải nằm trong khoảng 1-1.000.000.000 VND.');
-      return;
-    }
-    if (new Date(formData.start_date).valueOf() < new Date().setDate(new Date().getDate() - 7).valueOf()) {
-      setError('Ngày bắt đầu phải sau ngày hôm nay 1 tuần.');
-      return;
-    }
-    if (new Date(formData.start_date) > new Date(formData.end_date)) {
-      setError('Ngày bắt đầu không được lớn hơn ngày kết thúc.');
-      return;
-    }
     if (formData.image && formData.image.size > 2048 * 1024) {
       setError('Hình ảnh không được để lớn hơn 2MB.');
       return;
@@ -174,4 +176,3 @@ const TourForm: React.FC<TourFormProps> = ({ onSubmit, initialData }) => {
 };
 
 export default TourForm;
-

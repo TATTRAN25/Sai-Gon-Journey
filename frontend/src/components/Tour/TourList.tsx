@@ -32,6 +32,21 @@ const TourList: React.FC<TourListProps> = ({ tours, onTourClick }) => {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6 mt-10 text-center">Danh sách tour</h2>
+      <div className="relative w-full h-96">
+        <Image
+          loader={customLoader}
+          src="/images/slider.jpg"
+          alt="slider"
+          layout="fill"
+          objectFit="cover"
+          className="rounded-lg"
+          priority
+          unoptimized
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <h1 className="text-4xl font-bold text-white">Khám phá tour du l ch</h1>
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {tours.map((tour) => (
       <div key={tour.id} className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center" onClick={() => onTourClick(tour.id)}>
